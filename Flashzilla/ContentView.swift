@@ -8,14 +8,23 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var currentAmount: CGFloat = 0
+    @State private var finalAmount: CGFloat = 1
+    
     var body: some View {
         Text("Hello, world!")
             .padding()
-            .onLongPressGesture(minimumDuration: 1, pressing: { inProgress in
-                print("In progress: \(inProgress)!")
-            }) {
-                print("Long pressed!")
-            }
+            .scaleEffect(finalAmount + currentAmount)
+            .gesture(
+                MagnificationGesture()
+                    .onChanged { amount in
+                        self.currentAmount = amount - 1
+                    }
+                    .onEnded { amount in
+                        self.finalAmount += self.currentAmount
+                        self.currentAmount = 0
+                    }
+            )
     }
 }
 
