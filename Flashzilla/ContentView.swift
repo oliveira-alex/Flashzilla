@@ -19,7 +19,7 @@ struct ContentView: View {
                     print("Text tapped")
                 }
         }
-        .highPriorityGesture(
+        .simultaneousGesture(
             TapGesture()
                 .onEnded { _ in
                     print("VStack tappped")
