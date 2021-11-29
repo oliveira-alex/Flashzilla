@@ -8,19 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
-    let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect() // The tolerance parameter opens a windows in which the timer can run, so iOS can group it with other timers and thus optimize battery life
-    @State private var counter = 0
-    
     var body: some View {
         Text("Hello, World!")
-            .onReceive(timer) { time in
-                if self.counter == 5 {
-                    self.timer.upstream.connect().cancel()
-                } else {
-                    print("The time is now \(time)")
-                }
-                
-                self.counter += 1
+            .padding()
+//            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+//            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.userDidTakeScreenshotNotification)) { _ in
+//                print("Moving to the background!")
+//                print("Moving back to the foreground!")
+                print("User took a screenshot")
             }
     }
 }
@@ -28,6 +24,5 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .preferredColorScheme(.dark)
     }
 }
