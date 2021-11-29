@@ -8,16 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    let timer = Timer.publish(every: 1, tolerance: 0.5, on: .main, in: .common).autoconnect() // The tolerance parameter opens a windows in which the timer can run, so iOS can group it with other timers and thus optimize battery life
+    @State private var counter = 0
+    
     var body: some View {
-        VStack {
-            Text("Hello")
-            Spacer().frame(height: 100)
-            Text("World")
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            print("VStack tapped!")
-        }
+        Text("Hello, World!")
+            .onReceive(timer) { time in
+                if self.counter == 5 {
+                    self.timer.upstream.connect().cancel()
+                } else {
+                    print("The time is now \(time)")
+                }
+                
+                self.counter += 1
+            }
     }
 }
 
