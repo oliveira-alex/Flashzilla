@@ -11,6 +11,7 @@
 		E75771F0275178D200666D66 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75771EF275178D200666D66 /* ContentView.swift */; };
 		E75771F2275178D300666D66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E75771F1275178D300666D66 /* Assets.xcassets */; };
 		E75771F5275178D300666D66 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E75771F4275178D300666D66 /* Preview Assets.xcassets */; };
+		E78973F9275EA1C000B58B00 /* EditCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78973F8275EA1C000B58B00 /* EditCards.swift */; };
 		E7AB88232757BAB5009F8C60 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AB88222757BAB5009F8C60 /* Card.swift */; };
 		E7AB88282757BDF1009F8C60 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7AB88272757BDF1009F8C60 /* CardView.swift */; };
 /* End PBXBuildFile section */
@@ -21,6 +22,7 @@
 		E75771EF275178D200666D66 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E75771F1275178D300666D66 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E75771F4275178D300666D66 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E78973F8275EA1C000B58B00 /* EditCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCards.swift; sourceTree = "<group>"; };
 		E7AB88222757BAB5009F8C60 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		E7AB88272757BDF1009F8C60 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,6 +94,7 @@
 		E7AB88262757BD29009F8C60 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E78973F8275EA1C000B58B00 /* EditCards.swift */,
 				E75771EF275178D200666D66 /* ContentView.swift */,
 			);
 			path = View;
@@ -170,6 +173,7 @@
 				E75771F0275178D200666D66 /* ContentView.swift in Sources */,
 				E7AB88232757BAB5009F8C60 /* Card.swift in Sources */,
 				E7AB88282757BDF1009F8C60 /* CardView.swift in Sources */,
+				E78973F9275EA1C000B58B00 /* EditCards.swift in Sources */,
 				E75771EE275178D200666D66 /* FlashzillaApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
