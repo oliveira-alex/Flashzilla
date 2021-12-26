@@ -5,6 +5,7 @@
 //  Created by Alex Oliveira on 26/11/2021.
 //
 
+import CoreHaptics
 import SwiftUI
 
 extension View {
@@ -25,6 +26,8 @@ struct ContentView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @State private var showingEditScreen = false
+    
+    @State private var engine: CHHapticEngine?
     
     var body: some View {
         ZStack {
@@ -130,11 +133,13 @@ struct ContentView: View {
             
             if timeRemaining > 0 {
                 timeRemaining -= 1
-            } else {
-                // Remove all remaining cards
-                withAnimation {
-                    while cards.count > 0 {
-                        removeCard(at: cards.count - 1)
+                
+                if timeRemaining == 0 {
+                    // Remove all remaining cards
+                    withAnimation {
+                        while cards.count > 0 {
+                            removeCard(at: cards.count - 1)
+                        }
                     }
                 }
             }
@@ -160,11 +165,14 @@ struct ContentView: View {
         
         if cards.isEmpty {
             isActive = false
+            gameOverHaptics()
         }
     }
     
     func resetCards() {
-//        cards = [Card](repeating: Card.example, count: 10)
+        prepareHaptics()
+        
+        cards = [Card](repeating: Card.example, count: 10)
         timeRemaining = 100
         isActive = true
         loadData()
@@ -175,6 +183,44 @@ struct ContentView: View {
             if let decoded = try? JSONDecoder().decode([Card].self, from: data) {
                 cards = decoded
             }
+        }
+    }
+    
+    func prepareHaptics() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        
+        do {
+            engine = try CHHapticEngine()
+            try engine?.start()
+        } catch {
+            print("there was an error creating the engine: \(error.localizedDescription).")
+        }
+    }
+    
+    func gameOverHaptics() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        
+        var events = [CHHapticEvent]()
+        
+        let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(1))
+        let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(1))
+        let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: 0)
+        events.append(event)
+        
+        for i in stride(from: 0.4, to: 0.75, by: 0.15) {
+            let intensity = CHHapticEventParameter(parameterID: .hapticIntensity, value: Float(1))
+            let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(1))
+            let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: i)
+            events.append(event)
+            print(i)
+        }
+        
+        do {
+            let pattern = try CHHapticPattern(events: events, parameters: [])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("Failed to play pattern: \(error.localizedDescription).")
         }
     }
 }
