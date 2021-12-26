@@ -39,7 +39,7 @@ struct EditCards: View {
             .listStyle(GroupedListStyle())
             .onAppear(perform: loadData)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
+        .navigationViewStyle(StackNavigationViewStyle()) // This makes NavigationView works in landscape as expected, showing only one view at a time
     }
     
     func dismiss() {

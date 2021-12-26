@@ -34,7 +34,7 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.all)
             
             VStack {
-                Text("Time: \(timeRemaining)")
+                Text(timeRemaining > 0 ? "Time: \(timeRemaining)" : "Time is up!")
                     .font(.largeTitle)
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
@@ -130,6 +130,13 @@ struct ContentView: View {
             
             if timeRemaining > 0 {
                 timeRemaining -= 1
+            } else {
+                // Remove all remaining cards
+                withAnimation {
+                    while cards.count > 0 {
+                        removeCard(at: cards.count - 1)
+                    }
+                }
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
