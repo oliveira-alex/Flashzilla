@@ -18,10 +18,10 @@ extension View {
 struct ContentView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
-//    @State private var cards = [Card](repeating: Card.example, count: 10)
     @State private var cards = [Card]()
     
     @State private var isActive = true
+    @State private var retryCardsWronglyAnswered = true
     @State private var timeRemaining = 100
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -50,9 +50,13 @@ struct ContentView: View {
                 
                 ZStack {
                     ForEach(0..<cards.count, id: \.self) { index in
-                        CardView(card: cards[index]) {
+                        CardView(card: cards[index], retryCardsWronglyAnswered: retryCardsWronglyAnswered) { wrongAnswer in
                             withAnimation {
-                                removeCard(at: index)
+                                if retryCardsWronglyAnswered && wrongAnswer && cards.count > 1 {
+                                    moveCardToBottomOfPile()
+                                } else {
+                                    removeCard(at: index)
+                                }
                             }
                         }
                             .stacked(at: index, in: cards.count)
@@ -98,7 +102,11 @@ struct ContentView: View {
                     HStack {
                         Button(action: {
                             withAnimation {
-                                removeCard(at: cards.count - 1)
+                                if retryCardsWronglyAnswered && cards.count > 1 {
+                                    moveCardToBottomOfPile()
+                                } else {
+                                    removeCard(at: cards.count - 1)
+                                }
                             }
                         }) {
                             Image(systemName: "xmark.circle")
@@ -162,6 +170,9 @@ struct ContentView: View {
         guard index >= 0 else { return }
         
         cards.remove(at: index)
+        if cards.count == 1 {
+            retryCardsWronglyAnswered = false
+        }
         
         if cards.isEmpty {
             isActive = false
@@ -169,12 +180,21 @@ struct ContentView: View {
         }
     }
     
+    func moveCardToBottomOfPile() {
+        let lastCard = cards.removeLast()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            cards.insert(lastCard, at: 0)
+        }
+    }
+    
     func resetCards() {
         prepareHaptics()
         
-        cards = [Card](repeating: Card.example, count: 10)
-        timeRemaining = 100
+        cards = [Card](repeating: Card.example, count: 3)
+        timeRemaining = 20
         isActive = true
+        retryCardsWronglyAnswered = true
         loadData()
     }
     
@@ -212,7 +232,6 @@ struct ContentView: View {
             let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(1))
             let event = CHHapticEvent(eventType: .hapticTransient, parameters: [intensity, sharpness], relativeTime: i)
             events.append(event)
-            print(i)
         }
         
         do {

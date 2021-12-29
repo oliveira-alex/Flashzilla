@@ -12,8 +12,9 @@ struct CardView: View {
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
     
     let card: Card
-    var removal: (() -> Void)? = nil
-    
+    let retryCardsWronglyAnswered: Bool
+    var removal: ((_ wrongAswer: Bool) -> Void)? = nil
+
     @State private var isShowingAnswer = false
     @State private var offset = CGSize.zero
     @State private var feedback = UINotificationFeedbackGenerator()
@@ -70,11 +71,17 @@ struct CardView: View {
                     if abs(offset.width) > 100 {
                         if offset.width > 0 {
 //                            feedback.notificationOccurred(.success)      // Left out for being called too often
+                            removal?(false)
                         } else {
                             feedback.notificationOccurred(.error)
+                            removal?(true)
+                            
+                            if retryCardsWronglyAnswered {
+                                withAnimation(.spring()) {
+                                    offset = .zero
+                                }
+                            }
                         }
-                        
-                        removal?()
                     } else {
                         withAnimation(.spring()) {
                             offset = .zero
@@ -90,7 +97,7 @@ struct CardView: View {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-        CardView(card: Card.example)
+        CardView(card: Card.example, retryCardsWronglyAnswered: false)
             .previewInterfaceOrientation(.landscapeRight)
     }
 }
