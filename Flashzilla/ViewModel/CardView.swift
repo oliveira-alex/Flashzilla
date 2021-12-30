@@ -17,6 +17,7 @@ struct CardView: View {
 
     @State private var isShowingAnswer = false
     @State private var offset = CGSize.zero
+    @State private var isDraggingCard = false
     @State private var feedback = UINotificationFeedbackGenerator()
     
     var body: some View {
@@ -32,7 +33,7 @@ struct CardView: View {
                     differentiateWithoutColor
                         ? nil
                         : RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(offset.width > 0 ? Color.green : Color.red)
+                        .fill(isDraggingCard ? (offset.width > 0 ? Color.green : Color.red) : Color.white) // create custom modifier so this line becomes easier to understand
                 )
                 .shadow(radius: 10)
             
@@ -66,8 +67,12 @@ struct CardView: View {
                 .onChanged { gesture in
                     offset = gesture.translation
                     feedback.prepare()
+                    
+                    isDraggingCard = true
                 }
                 .onEnded { _ in
+                    isDraggingCard = false
+                    
                     if abs(offset.width) > 100 {
                         if offset.width > 0 {
 //                            feedback.notificationOccurred(.success)      // Left out for being called too often
