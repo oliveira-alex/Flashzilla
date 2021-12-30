@@ -21,11 +21,12 @@ struct ContentView: View {
     @State private var cards = [Card]()
     
     @State private var isActive = true
-    @State private var retryCardsWronglyAnswered = true
+    @State private var retryCardsAnsweredIncorrectly = true
     @State private var timeRemaining = 100
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @State private var showingEditScreen = false
+    @State private var showingSettingsScreen = false
     
     @State private var engine: CHHapticEngine?
     
@@ -50,9 +51,9 @@ struct ContentView: View {
                 
                 ZStack {
                     ForEach(0..<cards.count, id: \.self) { index in
-                        CardView(card: cards[index], retryCardsWronglyAnswered: retryCardsWronglyAnswered) { wrongAnswer in
+                        CardView(card: cards[index], retryCardsWronglyAnswered: retryCardsAnsweredIncorrectly) { wrongAnswer in
                             withAnimation {
-                                if retryCardsWronglyAnswered && wrongAnswer && cards.count > 1 {
+                                if retryCardsAnsweredIncorrectly && wrongAnswer && cards.count > 1 {
                                     moveCardToBottomOfPile()
                                 } else {
                                     removeCard(at: index)
@@ -77,9 +78,20 @@ struct ContentView: View {
             
             VStack {
                 HStack {
+                    Button(action: {
+                        isActive = false
+                        showingSettingsScreen = true
+                    }) {
+                        Image(systemName: "gear")
+                            .padding()
+                            .background(Color.black.opacity(0.7))
+                            .clipShape(Circle())
+                    }
+                    
                     Spacer()
                     
                     Button(action: {
+                        isActive = false
                         showingEditScreen = true
                     }) {
                         Image(systemName: "plus.circle")
@@ -102,7 +114,7 @@ struct ContentView: View {
                     HStack {
                         Button(action: {
                             withAnimation {
-                                if retryCardsWronglyAnswered && cards.count > 1 {
+                                if retryCardsAnsweredIncorrectly && cards.count > 1 {
                                     moveCardToBottomOfPile()
                                 } else {
                                     removeCard(at: cards.count - 1)
@@ -163,6 +175,9 @@ struct ContentView: View {
         .sheet(isPresented: $showingEditScreen, onDismiss: resetCards) {
             EditCards()
         }
+        .sheet(isPresented: $showingSettingsScreen, onDismiss: resetCards) {
+            SettingsView()
+        }
         .onAppear(perform: resetCards)
     }
     
@@ -171,7 +186,7 @@ struct ContentView: View {
         
         cards.remove(at: index)
         if cards.count == 1 {
-            retryCardsWronglyAnswered = false
+            retryCardsAnsweredIncorrectly = false
         }
         
         if cards.isEmpty {
@@ -192,9 +207,9 @@ struct ContentView: View {
         prepareHaptics()
         
         cards = [Card](repeating: Card.example, count: 3)
-        timeRemaining = 20
+        timeRemaining = 30
         isActive = true
-        retryCardsWronglyAnswered = true
+        retryCardsAnsweredIncorrectly = true
         loadData()
     }
     
@@ -202,6 +217,12 @@ struct ContentView: View {
         if let data = UserDefaults.standard.data(forKey: "Cards") {
             if let decoded = try? JSONDecoder().decode([Card].self, from: data) {
                 cards = decoded
+            }
+        }
+        
+        if let codedData = UserDefaults.standard.data(forKey: "CardsSettings") {
+            if let decodedData = try? JSONDecoder().decode(Bool.self, from: codedData) {
+                retryCardsAnsweredIncorrectly = decodedData
             }
         }
     }
@@ -247,5 +268,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .previewInterfaceOrientation(.landscapeLeft)
     }
 }
