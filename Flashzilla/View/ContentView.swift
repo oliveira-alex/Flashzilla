@@ -60,19 +60,22 @@ struct ContentView: View {
                                 }
                             }
                         }
-                            .stacked(at: index, in: cards.count)
-                            .allowsHitTesting(index == cards.count - 1)
-                            .accessibility(hidden: index < cards.count - 1)
+                        .stacked(at: index, in: cards.count)
+                        .allowsHitTesting(index == cards.count - 1)
+                        .accessibility(hidden: index < cards.count - 1)
                     }
                 }
                 .allowsHitTesting(timeRemaining > 0)
                 
                 if cards.isEmpty {
-                    Button("Start Again", action: resetCards)
-                        .padding()
-                        .background(Color.white)
-                        .foregroundColor(.black)
-                        .clipShape(Capsule())
+                    ZStack {
+                        Button("Start Again", action: resetCards)
+                            .padding()
+                            .background(Color.white)
+                            .foregroundColor(.black)
+                            .clipShape(Capsule())
+                    }
+                    .frame(width: 450, height: 242)
                 }
             }
             
@@ -142,9 +145,10 @@ struct ContentView: View {
                         .accessibility(label: Text("Correct"))
                         .accessibility(hint: Text("Mark your answer as being correct."))
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(isActive ? .white : .gray)
                     .font(.largeTitle)
                     .padding()
+                    .disabled(!isActive)
                 }
             }
         }
@@ -183,6 +187,7 @@ struct ContentView: View {
     
     func removeCard(at index: Int) {
         guard index >= 0 else { return }
+        if cards.isEmpty { return }
         
         cards.remove(at: index)
         if cards.count == 1 {
