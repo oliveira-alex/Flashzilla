@@ -7,6 +7,28 @@
 
 import SwiftUI
 
+//struct ConditionalBackgroundColor: ViewModifier {
+//    var viewOffset: CGSize
+//
+//    func body(content: Content) -> some View {
+//        content
+//            .overlay(
+//                RoundedRectangle(cornerRadius: 25, style: .continuous)
+//                    .fill(defineBackgroundColor(viewOffset))
+//            )
+//    }
+//
+//    func defineBackgroundColor(_ offset: CGSize) -> Color {
+//        if offset.width > 0 {
+//            return Color.green
+//        } else if offset.width < 0 {
+//            return Color.red
+//        } else {
+//            return Color.white
+//        }
+//    }
+//}
+
 struct CardView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
     @Environment(\.accessibilityEnabled) var accessibilityEnabled
@@ -17,7 +39,6 @@ struct CardView: View {
 
     @State private var isShowingAnswer = false
     @State private var offset = CGSize.zero
-    @State private var isDraggingCard = false
     @State private var feedback = UINotificationFeedbackGenerator()
     
     var body: some View {
@@ -33,7 +54,8 @@ struct CardView: View {
                     differentiateWithoutColor
                         ? nil
                         : RoundedRectangle(cornerRadius: 25, style: .continuous)
-                        .fill(isDraggingCard ? (offset.width > 0 ? Color.green : Color.red) : Color.white) // create custom modifier so this line becomes easier to understand
+                            .fill(defineBackgroundColor()) // Cleaner then using a view modifier
+//                        .modifier(ConditionalBackgroundColor(viewOffset: offset))
                 )
                 .shadow(radius: 10)
             
@@ -67,12 +89,8 @@ struct CardView: View {
                 .onChanged { gesture in
                     offset = gesture.translation
                     feedback.prepare()
-                    
-                    isDraggingCard = true
                 }
                 .onEnded { _ in
-                    isDraggingCard = false
-                    
                     if abs(offset.width) > 100 {
                         if offset.width > 0 {
 //                            feedback.notificationOccurred(.success)      // Left out for being called too often
@@ -96,6 +114,17 @@ struct CardView: View {
         )
         .onTapGesture {
             isShowingAnswer.toggle()
+        }
+    }
+    
+    func defineBackgroundColor() -> Color {
+        switch offset.width {
+        case ..<0:
+            return Color.red
+        case 0:
+            return Color.white
+        default:
+            return Color.green
         }
     }
 }
